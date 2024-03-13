@@ -15,7 +15,6 @@ public class DeclarationBlock : Block
     {
         base.Awake();
         // Call PopulateDropdownOptions when this block is created
-        PopulateDropdownOptions();
     }
 
     public override void Execute()

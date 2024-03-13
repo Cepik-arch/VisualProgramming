@@ -16,9 +16,6 @@ public class IfBlock : Block
     {
         base.Awake();
         blockType = BlockType.IfBlock;
-
-        PopulateDropdownOptions();
-        PopulateDropdownOptions();
     }
 
     public override void Execute()
@@ -81,6 +78,19 @@ public class IfBlock : Block
 
     public void PopulateDropdownOptions()
     {
+        // Store the current selected values
+        string selectedValue1 = "";
+        if (value1Dropdown.options.Count > value1Dropdown.value)
+        {
+            selectedValue1 = value1Dropdown.options[value1Dropdown.value].text;
+        }
+        string selectedValue2 = "";
+        if (value2Dropdown.options.Count > value2Dropdown.value)
+        {
+            selectedValue2 = value2Dropdown.options[value2Dropdown.value].text;
+        }
+
+        // Clear the options
         value1Dropdown.ClearOptions();
         value2Dropdown.ClearOptions();
 
@@ -96,7 +106,18 @@ public class IfBlock : Block
         // Set the dropdown options
         value1Dropdown.AddOptions(options);
         value2Dropdown.AddOptions(options);
+
+        // Re-select the previously selected values if they still exist in the options
+        if (!string.IsNullOrEmpty(selectedValue1) && options.Contains(selectedValue1))
+        {
+            value1Dropdown.value = options.IndexOf(selectedValue1);
+        }
+        if (!string.IsNullOrEmpty(selectedValue2) && options.Contains(selectedValue2))
+        {
+            value2Dropdown.value = options.IndexOf(selectedValue2);
+        }
     }
+
 
     // Method to find the value corresponding to a variable in the 'values' list
     private float FindValue(string variable)
