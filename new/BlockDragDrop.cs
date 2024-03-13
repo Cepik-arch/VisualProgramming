@@ -10,6 +10,7 @@ public class BlockDragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private BlockConnector blockConnector;
 
+
     private void Awake()
     {
         blockRectTransform = GetComponent<RectTransform>();
