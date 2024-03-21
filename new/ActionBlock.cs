@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
-
 
 public class ActionBlock : Block
 {
     public TMP_Dropdown action; // Name of the action to perform
+    public UnityEvent[] actionEvents; // UnityEvents for different actions
 
     public override void Execute()
     {
@@ -14,8 +15,8 @@ public class ActionBlock : Block
 
         Debug.Log($"Executing action: {actionName}");
 
-        // Perform the action based on its name
-        PerformAction(actionName);
+        // Trigger the assigned event
+        TriggerEvent(actionName);
 
         // Move to the next block in the sequence
         if (nextBlock != null)
@@ -24,34 +25,39 @@ public class ActionBlock : Block
         }
     }
 
-    private void PerformAction(string action)
+    private void TriggerEvent(string action)
     {
-        // Implement logic to perform the action based on its name
-        switch (action)
+        // Find the index of the action
+        int index = FindActionIndex(action);
+
+        // If the action is found, trigger its associated event
+        if (index != -1 && index < actionEvents.Length)
         {
-            case "MoveForward":
-                MoveForward();
-                break;
-            case "Jump":
-                Jump();
-                break;
-            // Add more actions as needed
-            default:
-                Debug.LogWarning($"Unknown action: {action}");
-                break;
+            actionEvents[index]?.Invoke();
+        }
+        else
+        {
+            Debug.LogWarning($"Action event not found for: {action}");
         }
     }
 
-    private void MoveForward()
+    private int FindActionIndex(string action)
     {
-        // Implement logic to move the player forward
-        Debug.Log("Moving forward...");
-    }
-
-    private void Jump()
-    {
-        // Implement logic to make the player jump
-        Debug.Log("Jumping...");
+        // Implement logic to find the index of the action
+        // For simplicity, I'm just returning the index directly
+        switch (action)
+        {
+            case "Start":
+                return 0;
+            case "Stop":
+                return 1;
+            case "Open":
+                return 2;
+            case "Close":
+                return 3;
+            // Add more actions as needed
+            default:
+                return -1;
+        }
     }
 }
-

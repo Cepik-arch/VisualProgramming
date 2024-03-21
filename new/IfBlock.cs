@@ -38,19 +38,20 @@ public class IfBlock : Block
         if (condition)
         {
             Debug.Log("Condition is true. Executing if block logic.");
-            // Add logic here for what happens when the condition is true
+            if (nextBlock != null)
+            {
+                nextBlock.Execute();
+            }
         }
         else
         {
             Debug.Log("Condition is false. Skipping if block.");
-            // Add logic here for what happens when the condition is false or if there's no else part
+            if (falseBlock != null)
+            {
+                falseBlock.Execute();
+            }
         }
 
-        // Move to the next block in the sequence
-        if (nextBlock != null)
-        {
-            nextBlock.Execute();
-        }
     }
 
     // Method to check the condition based on the operand

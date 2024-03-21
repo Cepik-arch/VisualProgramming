@@ -7,7 +7,7 @@ using TMPro;
 public class Value
 {
     public string variable { get; set; }
-    public int value { get; set; }
+    public float value { get; set; }
 }
 
 public class Block : MonoBehaviour

@@ -34,16 +34,13 @@ public class BlockConnector : MonoBehaviour
                 if (trueconnection)
                 {
                     ifBlock.nextBlock = secondBlockClicked;
-                    ConnectBlocks();
-                    trueconnection = false;
                 }
                 else
                 {
                     ifBlock.falseBlock = secondBlockClicked;
-                    ConnectBlocks();
-                    trueconnection = true;
                 }
-
+                ConnectBlocks();
+                trueconnection = !trueconnection;
             }
             else
             {
