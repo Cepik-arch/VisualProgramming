@@ -47,13 +47,13 @@ public class ActionBlock : Block
         // For simplicity, I'm just returning the index directly
         switch (action)
         {
-            case "Start":
-                return 0;
-            case "Stop":
-                return 1;
             case "Open":
-                return 2;
+                return 0;
             case "Close":
+                return 1;
+            case "Start":
+                return 2;
+            case "Stop":
                 return 3;
             // Add more actions as needed
             default:
