@@ -6,46 +6,79 @@ public class BlockConnector : MonoBehaviour
     private Block firstBlockClicked; // Store the first block clicked for connection
     private Block secondBlockClicked; // Store the second block clicked for connection
 
-    // variable for IFblock
+    // variables checking type of block
     private IfBlock ifBlock;
+    private bool trueConnection = true;
+
+    private LoopBlock loopBlock;
+    private bool loopConnection = true;
 
     public GameObject blockConnectionPrefab;
     private List<GameObject> connectionLines = new List<GameObject>(); // List to store connection line GameObjects
 
-    private bool trueconnection = true;
+
     public void SetBlockClicked(Block block)
     {
         if (firstBlockClicked == null)
         {
             firstBlockClicked = block;
             ifBlock = firstBlockClicked as IfBlock;
+            loopBlock = firstBlockClicked as LoopBlock;
+
             Debug.Log("First block clicked: " + firstBlockClicked.name + ", BlockType: " + firstBlockClicked.blockType);
 
         }
         else if (secondBlockClicked == null && firstBlockClicked != block)
         {
             secondBlockClicked = block;
-            Debug.Log("Second block clicked: " + secondBlockClicked.name);
 
-            if (ifBlock != null)
+            if (secondBlockClicked.cantBeNext == true)
             {
-                Debug.Log("is IFblock");
-
-                if (trueconnection)
-                {
-                    ifBlock.nextBlock = secondBlockClicked;
-                }
-                else
-                {
-                    ifBlock.falseBlock = secondBlockClicked;
-                }
-                ConnectBlocks();
-                trueconnection = !trueconnection;
+                secondBlockClicked = null;
+                firstBlockClicked = null;
+                return;
             }
             else
             {
-                firstBlockClicked.nextBlock = secondBlockClicked;
-                ConnectBlocks();
+                Debug.Log("Second block clicked: " + secondBlockClicked.name);
+
+                if (ifBlock != null)
+                {
+                    //Debug.Log("is IFblock");
+
+                    if (trueConnection)
+                    {
+                        ifBlock.nextBlock = secondBlockClicked;
+                    }
+                    else
+                    {
+                        ifBlock.falseBlock = secondBlockClicked;
+                    }
+                    ConnectBlocks();
+                    trueConnection = !trueConnection;
+                }
+                else if (loopBlock != null)
+                {
+                    //Debug.Log("is Loopblock");
+                    if (loopConnection)
+                    {
+                        loopBlock.loopedBlock = secondBlockClicked;
+                    }
+                    else
+                    {
+                        loopBlock.nextBlock = secondBlockClicked;
+                    }
+                    ConnectBlocks();
+                    loopConnection = !loopConnection;
+
+                }
+                else
+                {
+                    //Debug.Log("is DefaultBlock");
+
+                    firstBlockClicked.nextBlock = secondBlockClicked;
+                    ConnectBlocks();
+                }
             }
         }
         else if (secondBlockClicked == block)
@@ -53,8 +86,6 @@ public class BlockConnector : MonoBehaviour
             RemoveConnection(secondBlockClicked);
         }
     }
-
-
     private void ConnectBlocks()
     {
         if (firstBlockClicked != null && secondBlockClicked != null)
@@ -71,17 +102,22 @@ public class BlockConnector : MonoBehaviour
                     blockConnection.startBlock = firstBlockClicked;
                     blockConnection.endBlock = secondBlockClicked;
 
-                    // Determine connection color
-                    if (firstBlockClicked.blockType == Block.BlockType.IfBlock && secondBlockClicked == ifBlock.falseBlock)
+                    if (firstBlockClicked.inLoop)
                     {
-                        blockConnection.lineRenderer.startColor = blockConnection.falseConnectionColor;
-                        blockConnection.lineRenderer.endColor = blockConnection.falseConnectionColor;
+                        blockConnection.lineRenderer.startColor = blockConnection.loopConnectionColor;
+                        blockConnection.lineRenderer.endColor = blockConnection.loopConnectionColor;
+                        
+                        if(secondBlockClicked.blockType != Block.BlockType.LoopBlock)
+                        {
+                            secondBlockClicked.inLoop = true;
+                        }
                     }
                     else
                     {
                         blockConnection.lineRenderer.startColor = blockConnection.trueConnectionColor;
                         blockConnection.lineRenderer.endColor = blockConnection.trueConnectionColor;
                     }
+
 
                     blockConnection.DrawConnection();
 
@@ -110,14 +146,32 @@ public class BlockConnector : MonoBehaviour
                 }
             }
 
+            // If it's an LoopBlock, create a second connection line for the looped block
+            if (firstBlockClicked.blockType == Block.BlockType.LoopBlock)
+            {
+                GameObject blockConnectionObjectLoop = Instantiate(blockConnectionPrefab, transform.parent);
+                BlockConnection blockConnectionLoop = blockConnectionObjectLoop.GetComponent<BlockConnection>();
+
+                if (blockConnectionLoop != null)
+                {
+                    blockConnectionLoop.startBlock = firstBlockClicked;
+                    blockConnectionLoop.endBlock = loopBlock.loopedBlock;
+                    loopBlock.loopedBlock.inLoop = true;
+                    blockConnectionLoop.lineRenderer.startColor = blockConnectionLoop.loopConnectionColor;
+                    blockConnectionLoop.lineRenderer.endColor = blockConnectionLoop.loopConnectionColor;
+                    blockConnectionLoop.DrawConnection();
+
+                    connectionLines.Add(blockConnectionObjectLoop);
+                }
+            }
+
+
             // Reset variables
             firstBlockClicked = null;
             secondBlockClicked = null;
             ifBlock = null;
         }
     }
-
-
     private void RemoveConnection(Block block)
     {
         // Find and remove the connection lines that start at the given block
@@ -132,13 +186,25 @@ public class BlockConnector : MonoBehaviour
             }
         }
     }
-
     // Update the connection lines when a connected block is moved
     public void UpdateConnectionLines()
     {
         foreach (GameObject connectionLine in connectionLines)
         {
             connectionLine.GetComponent<BlockConnection>().DrawConnection();
+        }
+    }
+    public void RemoveAllConnections(Block block)
+    {
+        // Remove all outgoing connections from block
+        RemoveConnection(block);
+        block.nextBlock = null;
+
+        // If the block is an IfBlock, also clear the falseBlock reference
+        IfBlock ifBlock = block as IfBlock;
+        if (ifBlock != null)
+        {
+            ifBlock.falseBlock = null;
         }
     }
 }

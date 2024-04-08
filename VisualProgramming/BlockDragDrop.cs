@@ -5,8 +5,7 @@ public class BlockDragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     private RectTransform blockRectTransform;
     private CanvasGroup canvasGroup;
-    private Canvas canvas; // Reference to the Canvas component
-    private RectTransform canvasRectTransform; // Reference to the Canvas RectTransform
+    private RectTransform parentRectTransform; // Reference to the parent RectTransform
     private Vector2 offset;
     private BlockConnector blockConnector;
 
@@ -16,16 +15,14 @@ public class BlockDragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         blockConnector = GetComponentInParent<BlockConnector>();
 
         // Add a CanvasGroup component if it doesn't exist
-        canvasGroup = GetComponent<CanvasGroup>();
+        canvasGroup = gameObject.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
 
-        // Get reference to the Canvas component
-        canvas = GetComponentInParent<Canvas>();
-        // Get reference to the Canvas RectTransform
-        canvasRectTransform = canvas.GetComponent<RectTransform>();
+        // Get reference to the parent RectTransform
+        parentRectTransform = transform.parent.GetComponent<RectTransform>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -49,13 +46,22 @@ public class BlockDragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Calculate the anchored position within the canvas
+        // Calculate the anchored position within the parent RectTransform
         Vector2 newPos = eventData.position + offset;
-        
-        // Clamp the position within the canvas boundaries
-        newPos.x = Mathf.Clamp(newPos.x, canvasRectTransform.rect.xMin, canvasRectTransform.rect.xMax - blockRectTransform.rect.width);
-        newPos.y = Mathf.Clamp(newPos.y, canvasRectTransform.rect.yMin, canvasRectTransform.rect.yMax - blockRectTransform.rect.height);
-        
+
+        // Convert mouse position to local position in parent RectTransform
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, eventData.position, eventData.pressEventCamera, out newPos);
+
+        // Calculate boundaries in parent RectTransform space
+        float minX = parentRectTransform.rect.xMin + blockRectTransform.rect.width / 2; // Adjusted to account for block size
+        float maxX = parentRectTransform.rect.xMax - blockRectTransform.rect.width / 2; // Adjusted to account for block size
+        float minY = parentRectTransform.rect.yMin + blockRectTransform.rect.height / 2; // Adjusted to account for block size
+        float maxY = parentRectTransform.rect.yMax - blockRectTransform.rect.height / 2; // Adjusted to account for block size
+
+        // Clamp the position within the parent RectTransform boundaries
+        newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
+
         // Set the new anchored position
         blockRectTransform.anchoredPosition = newPos;
 
@@ -69,5 +75,10 @@ public class BlockDragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.blocksRaycasts = true;
+    }
+
+    public void RemoveConnection()
+    {
+        blockConnector.RemoveAllConnections(GetComponent<Block>());
     }
 }

@@ -1,29 +1,57 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine;
 
 public class LoopBlock : Block
 {
-    public TMP_InputField loopCount; // Number of times to loop
+    public Block loopedBlock;
+    public TMP_InputField loopCount;
+
+    private int loopNumber;
+    private int iteration = 0;
+
+
+    protected override void Awake()
+    {
+        base.Awake();
+        blockType = BlockType.LoopBlock;
+        inLoop = false;
+        
+    }
 
     public override void Execute()
     {
-        int loopcount = int.Parse(loopCount.text);
+        loopNumber = int.Parse(loopCount.text);
 
-        Debug.Log($"Executing loop block for {loopcount} times");
-
-        ShowValues();
-
-        for (int i = 0; i < loopcount; i++)
+        if (iteration == loopNumber)
         {
-            // Execute the next block in the sequence for each iteration of the loop
-            if (nextBlock != null)
-            {
-                
-                nextBlock.Execute();
-            }
+            ExecuteNextBlockWithDelay();
+            iteration = 0;
+        }
+        else
+        {
+            ExecuteLoopedBlockWithDelay();
+        }
+        iteration++;
+
+    }
+
+    private void ExecuteNextBlockWithDelay()
+    {
+        StartCoroutine(ExecuteNextBlockAfterDelay(nextBlock));
+    }
+
+    private void ExecuteLoopedBlockWithDelay()
+    {
+        StartCoroutine(ExecuteNextBlockAfterDelay(loopedBlock));
+    }
+    private IEnumerator ExecuteNextBlockAfterDelay(Block block)
+    {
+        yield return new WaitForSeconds(executionDelay);
+
+        if (block != null)
+        {
+            block.Execute();
         }
     }
 }

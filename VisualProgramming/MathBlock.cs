@@ -9,65 +9,55 @@ public class MathBlock : Block
 
     public override void Execute()
     {
-        float variable1;
-        float variable2;
+        float value1;
+        float value2;
 
-        // Check if input is a variable or a value
-        variable1 = IsVariable(variable1Input.text) ? FindValue(variable1Input.text) : float.Parse(variable1Input.text);
-        variable2 = IsVariable(variable2Input.text) ? FindValue(variable2Input.text) : float.Parse(variable2Input.text);
+        // Check if input is a variable or a value for Variable
+        if (!float.TryParse(variable1Input.text, out value1))
+        {
+            if (IsVariable(variable1Input.text))
+            {
+                value1 = (float)FindValue(variable1Input.text);
+            }
+            else
+            {
+                Debug.Log("Invalid input for Variable 1. Please enter a valid number or variable name.");
+                return;
+            }
+        }
+
+        if (!float.TryParse(variable2Input.text, out value2))
+        {
+            if (IsVariable(variable2Input.text))
+            {
+                value2 = (float)FindValue(variable2Input.text);
+            }
+            else
+            {
+                Debug.Log("Invalid input for Variable 2. Please enter a valid number or variable name.");
+                return;
+            }
+        }
 
         // Get the selected operand
         string operand = operandDropdown.options[operandDropdown.value].text;
 
-        Debug.Log($"Executing operation: {variable1} {operand} {variable2}");
+        Debug.Log($"Executing operation: {value1} {operand} {value2}");
 
         // Perform the operation based on the operand
-        float result = PerformOperation(variable1, variable2, operand);
-
+        float result = PerformOperation(value1, value2, operand);
         Debug.Log($"Result: {result}");
 
-        // Move to the next block in the sequence
-        if (nextBlock != null)
+        if (IsVariable(variable1Input.text))
         {
-            nextBlock.Execute();
+            SaveValue(variable1Input.text, result);
         }
-    }
+        else if (IsVariable(variable2Input.text))
+        {
+            SaveValue(variable2Input.text, result);
+        }
 
-    private bool IsVariable(string variable)
-    {
-        foreach (Value value in values)
-        {
-            if (value.variable == variable)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private float FindValue(string variable)
-    {
-        foreach (Value value in values)
-        {
-            if (value.variable == variable)
-            {
-                return value.value;
-            }
-        }
-        return 0f;
-    }
-    private void SaveValue(string variable, float value)
-    {
-        // Update the value of the variable in the list
-        for (int i = 0; i < values.Count; i++)
-        {
-            if (values[i].variable == variable)
-            {
-                values[i].value = value;
-                // Assuming you want to break the loop after finding the variable
-                break;
-            }
-        }
+        base.Execute();
     }
 
     private float PerformOperation(float variable1, float variable2, string operand)

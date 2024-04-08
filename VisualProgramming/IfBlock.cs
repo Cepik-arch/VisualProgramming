@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class IfBlock : Block
 {
     public Block falseBlock;
 
-    public TMP_Dropdown value1Dropdown;
-    public TMP_Dropdown value2Dropdown;
+    public TMP_InputField variable1Input;
+    public TMP_InputField variable2Input;
     public TMP_Dropdown operandDropdown;
 
     // Set the block type to IfBlock
@@ -20,38 +19,95 @@ public class IfBlock : Block
 
     public override void Execute()
     {
+        Debug.Log("Executing IF block.");
+        object value1 = null;
+        object value2 = null;
 
-        // Get values from dropdowns
-        string value1Variable = value1Dropdown.options[value1Dropdown.value].text;
-        string value2Variable = value2Dropdown.options[value2Dropdown.value].text;
+        bool boolValue1 = false;
+        bool boolValue2 = false;
 
-        // Find the corresponding values in the 'values' list
-        float value1 = FindValue(value1Variable);
-        float value2 = FindValue(value2Variable);
+        // Check if input is a variable or a value for Variable
+        if (!float.TryParse(variable1Input.text, out float floatValue1) && !bool.TryParse(variable1Input.text, out boolValue1))
+        {
+            if (IsVariable(variable1Input.text))
+            {
+                value1 = FindValue(variable1Input.text);
+            }
+            else
+            {
+                Debug.Log("Invalid input for Variable 1. Please enter a valid number or variable name.");
+                return;
+            }
+        }
+        else
+        {
+            value1 = floatValue1 != 0 ? (object)floatValue1 : (object)boolValue1;
+        }
+
+        if (!float.TryParse(variable2Input.text, out float floatValue2) && !bool.TryParse(variable2Input.text, out boolValue2))
+        {
+            if (IsVariable(variable2Input.text))
+            {
+                value2 = FindValue(variable2Input.text);
+            }
+            else
+            {
+                Debug.Log("Invalid input for Variable 2. Please enter a valid number or variable name.");
+                return;
+            }
+        }
+        else
+        {
+            value2 = floatValue2 != 0 ? (object)floatValue2 : (object)boolValue2;
+        }
 
         // Get selected operand from dropdown
         string operand = operandDropdown.options[operandDropdown.value].text;
 
         // Check the condition based on the operand
-        bool condition = CheckCondition(value1, value2, operand);
-
-        if (condition)
+        bool condition;
+        if (value1 is float && value2 is float)
         {
-            Debug.Log("Condition is true. Executing if block logic.");
-            if (nextBlock != null)
-            {
-                nextBlock.Execute();
-            }
+            condition = CheckCondition((float)value1, (float)value2, operand);
+        }
+        else if (value1 is bool && value2 is bool)
+        {
+            condition = CheckBoolCondition((bool)value1, (bool)value2, operand);
         }
         else
         {
-            Debug.Log("Condition is false. Skipping if block.");
-            if (falseBlock != null)
-            {
-                falseBlock.Execute();
-            }
+            Debug.LogError("Incompatible types for comparison.");
+            return;
         }
 
+        if (condition)
+        {
+            ExecuteNextBlockWithDelay();
+        }
+        else
+        {
+            ExecuteFalseBlockWithDelay();
+        }
+    }
+
+    private void ExecuteNextBlockWithDelay()
+    {
+        StartCoroutine(ExecuteNextBlockAfterDelay(nextBlock));
+    }
+
+    private void ExecuteFalseBlockWithDelay()
+    {
+        StartCoroutine(ExecuteNextBlockAfterDelay(falseBlock));
+    }
+
+    private IEnumerator ExecuteNextBlockAfterDelay(Block block)
+    {
+        yield return new WaitForSeconds(executionDelay);
+
+        if (block != null)
+        {
+            block.Execute();
+        }
     }
 
     // Method to check the condition based on the operand
@@ -77,63 +133,18 @@ public class IfBlock : Block
         }
     }
 
-    public void PopulateDropdownOptions()
+    private bool CheckBoolCondition(bool value1, bool value2, string operand)
     {
-        // Store the current selected values
-        string selectedValue1 = "";
-        if (value1Dropdown.options.Count > value1Dropdown.value)
+        switch (operand)
         {
-            selectedValue1 = value1Dropdown.options[value1Dropdown.value].text;
+            case "==":
+                return value1 == value2;
+            case "!=":
+                return value1 != value2;
+            default:
+                Debug.LogError("Invalid operand.");
+                return false;
         }
-        string selectedValue2 = "";
-        if (value2Dropdown.options.Count > value2Dropdown.value)
-        {
-            selectedValue2 = value2Dropdown.options[value2Dropdown.value].text;
-        }
-
-        // Clear the options
-        value1Dropdown.ClearOptions();
-        value2Dropdown.ClearOptions();
-
-        // Create a list of dropdown options
-        List<string> options = new List<string>();
-
-        // Add values from the 'values' list to the dropdown options
-        foreach (Value value in values)
-        {
-            options.Add(value.variable);
-        }
-
-        // Set the dropdown options
-        value1Dropdown.AddOptions(options);
-        value2Dropdown.AddOptions(options);
-
-        // Re-select the previously selected values if they still exist in the options
-        if (!string.IsNullOrEmpty(selectedValue1) && options.Contains(selectedValue1))
-        {
-            value1Dropdown.value = options.IndexOf(selectedValue1);
-        }
-        if (!string.IsNullOrEmpty(selectedValue2) && options.Contains(selectedValue2))
-        {
-            value2Dropdown.value = options.IndexOf(selectedValue2);
-        }
-    }
-
-
-    // Method to find the value corresponding to a variable in the 'values' list
-    private float FindValue(string variable)
-    {
-        foreach (Value value in values)
-        {
-            if (value.variable == variable)
-            {
-                return value.value;
-            }
-        }
-
-        // If variable not found, return 0 (or handle differently based on your requirement)
-        Debug.LogError($"Variable '{variable}' not found in values list.");
-        return 0f;
     }
 }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class CallUI : MonoBehaviour
 {
-    public GameObject UI;
+    public Canvas UI;
     public GameObject player;
     private FirstPersonController playerMovement;
 
@@ -15,7 +15,7 @@ public class CallUI : MonoBehaviour
 
     private void Start()
     {
-
+        UI.enabled = false;
         playerMovement = player.GetComponent<FirstPersonController>();
     }
 
@@ -23,7 +23,8 @@ public class CallUI : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            UI.SetActive(true);
+            UI.enabled = true;
+            ToggleLines(UI.transform, true);
 
             UiCamera.SetActive(true);
             PlayerCamera.SetActive(false);
@@ -38,36 +39,41 @@ public class CallUI : MonoBehaviour
         }
     }
 
-    /*
-    private void Update()
+    public void TurnOffUI()
     {
-        if (!UI.activeSelf)
+        UI.enabled = false;
+        ToggleLines(UI.transform, false);
+
+        UiCamera.SetActive(false);
+        PlayerCamera.SetActive(true);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (playerMovement != null)
         {
-            UiCamera.SetActive(false);
-            PlayerCamera.SetActive(true);
+            playerMovement.enabled = true;
+        }
+    }
 
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-
-            if (playerMovement != null)
+    private void ToggleLines(Transform parentTransform, bool enableLines)
+    {
+        // Iterate through all children of the parent transform
+        foreach (Transform child in parentTransform)
+        {
+            // Check if the child's name matches "Line(clone)"
+            if (child.name.StartsWith("Line(Clone)"))
             {
-                playerMovement.enabled = true;
+                // Toggle the visibility of the line object based on the 'enableLines' parameter
+                child.gameObject.SetActive(enableLines);
+            }
+
+            // Recursively toggle lines under each child if it has further nested children
+            if (child.childCount > 0)
+            {
+                ToggleLines(child, enableLines);
             }
         }
     }
-    */
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            UI.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            if (playerMovement != null)
-            {
-                playerMovement.enabled = true;
-            }
-        }
-    }
 }

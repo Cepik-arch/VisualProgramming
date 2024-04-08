@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,58 +5,67 @@ using TMPro;
 
 public class ActionBlock : Block
 {
-    public TMP_Dropdown action; // Name of the action to perform
-    public UnityEvent[] actionEvents; // UnityEvents for different actions
-
-    public override void Execute()
+    [System.Serializable]
+    public class ActionEvent
     {
-        string actionName = action.options[action.value].text;
-
-        Debug.Log($"Executing action: {actionName}");
-
-        // Trigger the assigned event
-        TriggerEvent(actionName);
-
-        // Move to the next block in the sequence
-        if (nextBlock != null)
-        {
-            nextBlock.Execute();
-        }
+        public string actionName;
+        public UnityEvent actionEvent;
     }
 
-    private void TriggerEvent(string action)
-    {
-        // Find the index of the action
-        int index = FindActionIndex(action);
+    public TMP_Dropdown actionDropdown;
+    public List<ActionEvent> actionEvents = new List<ActionEvent>();
 
-        // If the action is found, trigger its associated event
-        if (index != -1 && index < actionEvents.Length)
+    private void Start()
+    {
+        // Ensure the dropdown is assigned
+        if (actionDropdown != null)
         {
-            actionEvents[index]?.Invoke();
+            // Clear existing options
+            actionDropdown.ClearOptions();
+
+            // Create a list of option strings from actionEvents
+            List<string> options = new List<string>();
+            foreach (var actionEvent in actionEvents)
+            {
+                options.Add(actionEvent.actionName);
+            }
+
+            // Set the dropdown options
+            actionDropdown.AddOptions(options);
         }
         else
         {
-            Debug.LogWarning($"Action event not found for: {action}");
+            Debug.LogWarning("Action dropdown not assigned.");
         }
     }
 
-    private int FindActionIndex(string action)
+    public override void Execute()
     {
-        // Implement logic to find the index of the action
-        // For simplicity, I'm just returning the index directly
-        switch (action)
+        if (actionDropdown != null)
         {
-            case "Open":
-                return 0;
-            case "Close":
-                return 1;
-            case "Start":
-                return 2;
-            case "Stop":
-                return 3;
-            // Add more actions as needed
-            default:
-                return -1;
+            string selectedAction = actionDropdown.options[actionDropdown.value].text;
+            Debug.Log($"Executing action: {selectedAction}");
+            TriggerEvent(selectedAction);
+        }
+        else
+        {
+            Debug.LogWarning("Action dropdown not assigned.");
+        }
+
+        base.Execute();
+    }
+
+    private void TriggerEvent(string actionName)
+    {
+        ActionEvent foundEvent = actionEvents.Find(a => a.actionName == actionName);
+
+        if (foundEvent != null && foundEvent.actionEvent != null)
+        {
+            foundEvent.actionEvent.Invoke();
+        }
+        else
+        {
+            Debug.LogWarning($"Action event not found for: {actionName}");
         }
     }
 }

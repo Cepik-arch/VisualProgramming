@@ -12,6 +12,7 @@ public class BlockConnection : MonoBehaviour
 
     public Color trueConnectionColor = Color.green; // Color for true connection
     public Color falseConnectionColor = Color.red; // Color for false connection
+    public Color loopConnectionColor = Color.blue; // Color for loop connection
 
     public void DrawConnection()
     {
