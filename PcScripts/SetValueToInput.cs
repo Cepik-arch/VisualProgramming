@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -14,11 +12,17 @@ public class SetValueToInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        object objValue = blockWithValue.GetValueByName(nameOfValue);
-        if (objValue != null && objValue is float)
+        if (inputField != null)
         {
-            value = (float)objValue;
-            inputField.text = value.ToString();
+
+            object objValue = blockWithValue.GetValueByName(nameOfValue);
+            if (objValue != null && objValue is float)
+            {
+                value = (float)objValue;
+                inputField.text = value.ToString();
+
+
+            }
         }
     }
 }

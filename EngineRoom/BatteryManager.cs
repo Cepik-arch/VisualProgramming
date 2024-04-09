@@ -11,7 +11,7 @@ public class BatteryManager : MonoBehaviour
         public Material lowBatteryMaterial;
         public Material fullBatteryMaterial;
         [Range(0.0f, 1.0f)]
-        public float batteryLevel = 1.0f;
+        public float batteryLevel = 0f;
     }
 
     public List<BatteryData> batteries = new List<BatteryData>();
@@ -19,24 +19,36 @@ public class BatteryManager : MonoBehaviour
 
     private Coroutine[] transitionCoroutines;
 
+    public Block blockValue;
+    private int batteryIndex;
+
     private void Start()
     {
-        // Initialize transition coroutine array
         transitionCoroutines = new Coroutine[batteries.Count];
     }
 
-    public void ChangeBattery()
+    public void ChargeBattery()
     {
-        for (int i = 0; i < batteries.Count; i++)
+
+        if (int.TryParse(blockValue.GetValueByName("X").ToString(), out int batteryIndex))
         {
-            SetBatteryLevel(i, batteries[i].batteryLevel);
+            if (batteryIndex < batteries.Count)
+            {
+                SetBatteryLevel(batteryIndex, 1f);
+            }
         }
+        else
+        {
+            Debug.Log("Wrong input for BatteryIndex");
+            return;
+        }
+
     }
 
     // Call this method to update the battery level of a specific battery
     private void SetBatteryLevel(int batteryIndex, float newBatteryLevel)
     {
-        batteries[batteryIndex].batteryLevel = Mathf.Clamp01(newBatteryLevel); // Clamp between 0 and 1
+        batteries[batteryIndex].batteryLevel = Mathf.Clamp01(newBatteryLevel);
 
         // If a transition is already in progress for this battery, stop it
         if (transitionCoroutines[batteryIndex] != null)
@@ -52,7 +64,7 @@ public class BatteryManager : MonoBehaviour
     private IEnumerator TransitionBatteryMaterial(int batteryIndex)
     {
         BatteryData battery = batteries[batteryIndex];
-        Material startMaterial = battery.batteryRenderer.material;
+        Material startMaterial = battery.batteryRenderer.materials[1];
         Material targetMaterial = battery.batteryLevel > 0.5f ? battery.fullBatteryMaterial : battery.lowBatteryMaterial;
 
         Color startEmissionColor = startMaterial.GetColor("_EmissionColor");

@@ -23,7 +23,8 @@ public class LoopBlock : Block
     {
         loopNumber = int.Parse(loopCount.text);
 
-        if (iteration == loopNumber)
+        iteration++;
+        if (iteration > loopNumber)
         {
             ExecuteNextBlockWithDelay();
             iteration = 0;
@@ -32,7 +33,6 @@ public class LoopBlock : Block
         {
             ExecuteLoopedBlockWithDelay();
         }
-        iteration++;
 
     }
 
