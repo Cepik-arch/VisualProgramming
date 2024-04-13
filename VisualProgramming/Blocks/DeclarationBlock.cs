@@ -31,7 +31,7 @@ public class DeclarationBlock : Block
             }
             else
             {
-                Debug.Log("Wrong input try to be declared");
+                WriteToDebugField("Wrong input try to be declared", Color.red);
                 return;
             }
 
@@ -46,7 +46,7 @@ public class DeclarationBlock : Block
 
     private void RemoveVariable(string name)
     {
-        // Check if the variable with the same name already exists
+        // Check if the variable with the same name already existsa
         foreach (var value in variables)
         {
             if (value.name == name)

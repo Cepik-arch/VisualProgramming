@@ -24,13 +24,16 @@ public class LoopBlock : Block
         loopNumber = int.Parse(loopCount.text);
 
         iteration++;
+
         if (iteration > loopNumber)
         {
+            WriteToDebugField($"Loop ended");
             ExecuteNextBlockWithDelay();
             iteration = 0;
         }
         else
         {
+            WriteToDebugField($"Iteration of loop: {iteration}");
             ExecuteLoopedBlockWithDelay();
         }
 

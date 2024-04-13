@@ -18,19 +18,18 @@ public class BlockConnection : MonoBehaviour
     {
         if (startBlock != null && endBlock != null)
         {
-            // Ensure the position count matches the number of points needed (2 for start and end)
             if (lineRenderer.positionCount != 2)
             {
                 lineRenderer.positionCount = 2;
             }
 
-            // Set the positions
-            lineRenderer.SetPosition(0, startBlock.transform.position);
-            lineRenderer.SetPosition(1, endBlock.transform.position);
+            //set the line positions
+            lineRenderer.SetPosition(0, startBlock.NextBlockConnector.transform.position);
+            lineRenderer.SetPosition(1, endBlock.BlockConnector.transform.position);
         }
         else
         {
-            // If start or end block is missing, clear the line
+            //clear line
             lineRenderer.positionCount = 0;
         }
     }

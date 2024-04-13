@@ -22,10 +22,15 @@ public class Block : MonoBehaviour
 
     public BlockType blockType = BlockType.Default;
 
+    //[HideInInspector]
+    public GameObject BlockConnector;
+    //[HideInInspector]
+    public GameObject NextBlockConnector;
+
     public bool cantBeNext;
 
     // If Block is in loop its has different line color
-    //[HideInInspector]
+    [HideInInspector]
     public bool inLoop = false;
 
     public Block nextBlock;
@@ -33,14 +38,24 @@ public class Block : MonoBehaviour
     protected static List<Variable> variables = new List<Variable>();
     protected float executionDelay = 1f;
 
+    protected TMP_InputField debugField;
+
     protected virtual void Awake()
     {
         blockType = BlockType.Default;
+
+        //Search in childs for connectors points
+        BlockConnector = FindChildWithTag(gameObject, "BlockConnector");
+        NextBlockConnector = FindChildWithTag(gameObject, "NextBlockConnector");
+
+        //Debug blocks
+        debugField = transform.parent.parent.Find("DebugLog")?.GetComponentInChildren<TMP_InputField>();
+
     }
 
     public virtual void Execute()
     {
-        ShowValues();
+        //ShowValues();
         StartCoroutine(ExecuteWithDelay(executionDelay));
     }
 
@@ -117,6 +132,49 @@ public class Block : MonoBehaviour
         if (nextBlock != null)
         {
             nextBlock.Execute();
+        }
+    }
+
+    //Search for childs with tag
+    private static GameObject FindChildWithTag(GameObject parent, string tag)
+    {
+        Transform t = parent.transform;
+
+        for (int i = 0; i < t.childCount; i++)
+        {
+            if (t.GetChild(i).gameObject.tag == tag)
+            {
+                return t.GetChild(i).gameObject;
+            }
+
+        }
+
+        return null;
+    }
+
+
+
+    protected void WriteToDebugField(String debugOutput, Color? color = null)
+    {
+        
+
+        if (color != null)
+        {
+            color = Color.white;
+        }
+        
+        if (debugField != null && debugOutput != null)
+        {
+            debugField.text = debugOutput;
+
+            if (color != null)
+            {
+                debugField.textComponent.color = color.Value;
+            }
+            else
+            {
+                debugField.textComponent.color = Color.white;
+            }
         }
     }
 }

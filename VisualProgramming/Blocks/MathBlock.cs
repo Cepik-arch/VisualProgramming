@@ -22,6 +22,7 @@ public class MathBlock : Block
             else
             {
                 Debug.Log("Invalid input for Variable 1. Please enter a valid number or variable name.");
+                WriteToDebugField("Invalid input for Variable 1. Please enter a valid number or variable name.", Color.red);
                 return;
             }
         }
@@ -35,6 +36,7 @@ public class MathBlock : Block
             else
             {
                 Debug.Log("Invalid input for Variable 2. Please enter a valid number or variable name.");
+                WriteToDebugField("Invalid input for Variable 2. Please enter a valid number or variable name.", Color.red);
                 return;
             }
         }
@@ -43,10 +45,13 @@ public class MathBlock : Block
         string operand = operandDropdown.options[operandDropdown.value].text;
 
         Debug.Log($"Executing operation: {value1} {operand} {value2}");
+        WriteToDebugField($"Executing operation: {value1} {operand} {value2}");
 
         // Perform the operation based on the operand
         float result = PerformOperation(value1, value2, operand);
+
         Debug.Log($"Result: {result}");
+        WriteToDebugField($"Result: {result}");
 
         if (IsVariable(variable1Input.text))
         {

@@ -44,7 +44,8 @@ public class ActionBlock : Block
         if (actionDropdown != null)
         {
             string selectedAction = actionDropdown.options[actionDropdown.value].text;
-            Debug.Log($"Executing action: {selectedAction}");
+            //Debug.Log($"Executing action: {selectedAction}");
+            WriteToDebugField($"Executing action: {selectedAction}");
             TriggerEvent(selectedAction);
         }
         else

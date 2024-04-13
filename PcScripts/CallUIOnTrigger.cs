@@ -3,19 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CallUI : MonoBehaviour
 {
-    public Canvas UI;
-    public GameObject player;
-    private FirstPersonController playerMovement;
+    private Canvas ui;
 
-    public GameObject PlayerCamera;
-    public GameObject UiCamera;
+    private GameObject player;
+    private FirstPersonController playerMovement;
+    private GameObject playerCamera;
+    private GameObject uiCamera;
+
+    private void Awake()
+    {
+        ui = gameObject.GetComponentInChildren<Canvas>();
+        uiCamera = GameObject.FindGameObjectWithTag("UiCamera");
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerCamera = GameObject.FindGameObjectWithTag("MainCamera"); 
+    }
 
     private void Start()
     {
-        UI.enabled = false;
+        ui.enabled = false;
+
+        uiCamera.SetActive(false);
+
         playerMovement = player.GetComponent<FirstPersonController>();
     }
 
@@ -23,11 +35,12 @@ public class CallUI : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            UI.enabled = true;
-            ToggleLines(UI.transform, true);
+            ui.enabled = true;
+            ToggleLines(ui.transform, true);
+            ToggleInputs(ui, true);
 
-            UiCamera.SetActive(true);
-            PlayerCamera.SetActive(false);
+            uiCamera.SetActive(true);
+            playerCamera.SetActive(false);
 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -41,11 +54,12 @@ public class CallUI : MonoBehaviour
 
     public void TurnOffUI()
     {
-        UI.enabled = false;
-        ToggleLines(UI.transform, false);
+        ui.enabled = false;
+        ToggleLines(ui.transform, false);
+        ToggleInputs (ui, false);
 
-        UiCamera.SetActive(false);
-        PlayerCamera.SetActive(true);
+        uiCamera.SetActive(false);
+        playerCamera.SetActive(true);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -56,24 +70,30 @@ public class CallUI : MonoBehaviour
         }
     }
 
-    private void ToggleLines(Transform parentTransform, bool enableLines)
+    private void ToggleLines(Transform parent, bool enableLines)
     {
-        // Iterate through all children of the parent transform
-        foreach (Transform child in parentTransform)
+        foreach (Transform child in parent)
         {
-            // Check if the child's name matches "Line(clone)"
             if (child.name.StartsWith("Line(Clone)"))
             {
-                // Toggle the visibility of the line object based on the 'enableLines' parameter
                 child.gameObject.SetActive(enableLines);
             }
 
-            // Recursively toggle lines under each child if it has further nested children
             if (child.childCount > 0)
             {
                 ToggleLines(child, enableLines);
             }
         }
+    }
+
+    private void ToggleInputs(Canvas parent, bool enableInput)
+    {
+        InputField[] inputFields = parent.GetComponentsInChildren<InputField>();
+        foreach (InputField inputField in inputFields)
+        {
+            inputField.interactable = enableInput;
+        }
+
     }
 
 }

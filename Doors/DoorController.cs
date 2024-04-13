@@ -6,6 +6,7 @@ public class DoorController : MonoBehaviour
 {
     private Animator doorAnimator;
     private NeedValue needValue;
+    private AudioSource doorSound;
 
     private float value;
 
@@ -13,6 +14,7 @@ public class DoorController : MonoBehaviour
     {
         doorAnimator = GetComponent<Animator>();
         needValue = GetComponent<NeedValue>();
+        doorSound = GetComponent<AudioSource>();
     }
 
     public void OpenDoor()
@@ -22,19 +24,19 @@ public class DoorController : MonoBehaviour
             value = (float)needValue.blockWithValue.GetValueByName(needValue.nameOfValue);
             if (value >= needValue.minValueToOpen && value <= needValue.maxValueToOpen)
             {
-                Debug.Log("OpenDoorInController");
                 doorAnimator.SetBool("open", true);
+                doorSound.Play();
             }
         }
         else
         {
-            Debug.Log("OpenDoorInController");
             doorAnimator.SetBool("open", true);
+            doorSound.Play();
         }
     }
     public void CloseDoor()
     {
-        Debug.Log("CloseDoorInController");
         doorAnimator.SetBool("open", false);
+        doorSound.Play();
     }
 }

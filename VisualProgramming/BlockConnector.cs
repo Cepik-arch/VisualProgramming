@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class BlockConnector : MonoBehaviour
 {
-    private Block firstBlockClicked; // Store the first block clicked for connection
-    private Block secondBlockClicked; // Store the second block clicked for connection
+    private Block firstBlockClicked;
+    private Block secondBlockClicked;
 
-    // variables checking type of block
+    //variables checking type of block
     private IfBlock ifBlock;
     private bool trueConnection = true;
 
@@ -14,7 +14,7 @@ public class BlockConnector : MonoBehaviour
     private bool loopConnection = true;
 
     public GameObject blockConnectionPrefab;
-    private List<GameObject> connectionLines = new List<GameObject>(); // List to store connection line GameObjects
+    private List<GameObject> connectionLines = new List<GameObject>();
 
 
     public void SetBlockClicked(Block block)
@@ -121,13 +121,13 @@ public class BlockConnector : MonoBehaviour
 
                     blockConnection.DrawConnection();
 
-                    // Add the connection line GameObject to the list
+                    //add the connection line GameObject to the list
                     connectionLines.Add(blockConnectionObject);
                     Debug.Log("Blocks connected: " + firstBlockClicked.name + " -> " + secondBlockClicked.name);
                 }
             }
 
-            // If it's an IfBlock, create a second connection line for the false block
+            //if it's an IfBlock, create a second connection line for the false block
             if (firstBlockClicked.blockType == Block.BlockType.IfBlock)
             {
                 // Create a new connection line for the false block
@@ -174,7 +174,7 @@ public class BlockConnector : MonoBehaviour
     }
     private void RemoveConnection(Block block)
     {
-        // Find and remove the connection lines that start at the given block
+        //find and remove the connection lines that start at the given block
         for (int i = connectionLines.Count - 1; i >= 0; i--)
         {
             BlockConnection connection = connectionLines[i].GetComponent<BlockConnection>();
@@ -186,7 +186,7 @@ public class BlockConnector : MonoBehaviour
             }
         }
     }
-    // Update the connection lines when a connected block is moved
+    //update the connection lines when a connected block is moved
     public void UpdateConnectionLines()
     {
         foreach (GameObject connectionLine in connectionLines)
@@ -196,11 +196,11 @@ public class BlockConnector : MonoBehaviour
     }
     public void RemoveAllConnections(Block block)
     {
-        // Remove all outgoing connections from block
+        //remove all outgoing connections from block
         RemoveConnection(block);
         block.nextBlock = null;
 
-        // If the block is an IfBlock, also clear the falseBlock reference
+        //if the block is an IfBlock, also clear the falseBlock reference
         IfBlock ifBlock = block as IfBlock;
         if (ifBlock != null)
         {

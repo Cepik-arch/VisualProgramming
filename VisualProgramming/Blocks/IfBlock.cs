@@ -36,6 +36,7 @@ public class IfBlock : Block
             else
             {
                 Debug.Log("Invalid input for Variable 1. Please enter a valid number or variable name.");
+                WriteToDebugField("Invalid input for Variable 1. Please enter a valid number or variable name.");
                 return;
             }
         }
@@ -53,6 +54,7 @@ public class IfBlock : Block
             else
             {
                 Debug.Log("Invalid input for Variable 2. Please enter a valid number or variable name.");
+                WriteToDebugField("Invalid input for Variable 2. Please enter a valid number or variable name.");
                 return;
             }
         }
@@ -77,6 +79,7 @@ public class IfBlock : Block
         else
         {
             Debug.LogError("Incompatible types for comparison.");
+            WriteToDebugField("Incompatible variables for comparison.");
             return;
         }
 
