@@ -1,4 +1,3 @@
-using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -10,7 +9,7 @@ public class CallUI : MonoBehaviour
     private Canvas ui;
 
     private GameObject player;
-    private FirstPersonController playerMovement;
+    private PlayerController.PlayerController playerMovement;
     private GameObject playerCamera;
     private GameObject uiCamera;
 
@@ -28,7 +27,7 @@ public class CallUI : MonoBehaviour
 
         uiCamera.SetActive(false);
 
-        playerMovement = player.GetComponent<FirstPersonController>();
+        playerMovement = player.GetComponent<PlayerController.PlayerController>();
     }
 
     private void OnTriggerEnter(Collider other)

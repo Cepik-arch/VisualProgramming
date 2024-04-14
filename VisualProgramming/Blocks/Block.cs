@@ -22,18 +22,19 @@ public class Block : MonoBehaviour
 
     public BlockType blockType = BlockType.Default;
 
-    //[HideInInspector]
-    public GameObject BlockConnector;
-    //[HideInInspector]
-    public GameObject NextBlockConnector;
-
-    public bool cantBeNext;
+    [HideInInspector]
+    public GameObject blockConnector;
+    [HideInInspector]
+    public GameObject nextBlockConnector;
 
     // If Block is in loop its has different line color
     [HideInInspector]
     public bool inLoop = false;
-
+    [HideInInspector]
     public Block nextBlock;
+    public bool cantBeNext;
+    [HideInInspector]
+    public GameObject grayedImg;
 
     protected static List<Variable> variables = new List<Variable>();
     protected float executionDelay = 1f;
@@ -45,11 +46,17 @@ public class Block : MonoBehaviour
         blockType = BlockType.Default;
 
         //Search in childs for connectors points
-        BlockConnector = FindChildWithTag(gameObject, "BlockConnector");
-        NextBlockConnector = FindChildWithTag(gameObject, "NextBlockConnector");
+        blockConnector = FindChildWithTag(gameObject, "BlockConnector");
+        nextBlockConnector = FindChildWithTag(gameObject, "NextBlockConnector");
+
+        //GrayedImg for double click
+        grayedImg = FindChildWithTag(gameObject,"GrayedImg");
+        grayedImg.SetActive(false);
 
         //Debug blocks
         debugField = transform.parent.parent.Find("DebugLog")?.GetComponentInChildren<TMP_InputField>();
+
+
 
     }
 
@@ -151,8 +158,6 @@ public class Block : MonoBehaviour
 
         return null;
     }
-
-
 
     protected void WriteToDebugField(String debugOutput, Color? color = null)
     {

@@ -22,6 +22,8 @@ public class BlockConnector : MonoBehaviour
         if (firstBlockClicked == null)
         {
             firstBlockClicked = block;
+            firstBlockClicked.grayedImg.SetActive(true);
+
             ifBlock = firstBlockClicked as IfBlock;
             loopBlock = firstBlockClicked as LoopBlock;
 
@@ -36,6 +38,7 @@ public class BlockConnector : MonoBehaviour
             {
                 secondBlockClicked = null;
                 firstBlockClicked = null;
+                firstBlockClicked.grayedImg.SetActive(false);
                 return;
             }
             else
@@ -54,6 +57,7 @@ public class BlockConnector : MonoBehaviour
                     {
                         ifBlock.falseBlock = secondBlockClicked;
                     }
+                    ifBlock.grayedImg.SetActive(false);
                     ConnectBlocks();
                     trueConnection = !trueConnection;
                 }
@@ -68,15 +72,15 @@ public class BlockConnector : MonoBehaviour
                     {
                         loopBlock.nextBlock = secondBlockClicked;
                     }
+                    loopBlock.grayedImg.SetActive(false);
                     ConnectBlocks();
                     loopConnection = !loopConnection;
 
                 }
                 else
                 {
-                    //Debug.Log("is DefaultBlock");
-
                     firstBlockClicked.nextBlock = secondBlockClicked;
+                    firstBlockClicked.grayedImg.SetActive(false);
                     ConnectBlocks();
                 }
             }

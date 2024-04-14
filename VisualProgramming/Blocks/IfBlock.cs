@@ -135,7 +135,6 @@ public class IfBlock : Block
                 return false;
         }
     }
-
     private bool CheckBoolCondition(bool value1, bool value2, string operand)
     {
         switch (operand)

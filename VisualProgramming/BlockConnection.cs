@@ -24,8 +24,8 @@ public class BlockConnection : MonoBehaviour
             }
 
             //set the line positions
-            lineRenderer.SetPosition(0, startBlock.NextBlockConnector.transform.position);
-            lineRenderer.SetPosition(1, endBlock.BlockConnector.transform.position);
+            lineRenderer.SetPosition(0, startBlock.nextBlockConnector.transform.position);
+            lineRenderer.SetPosition(1, endBlock.blockConnector.transform.position);
         }
         else
         {

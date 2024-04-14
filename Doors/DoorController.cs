@@ -1,6 +1,4 @@
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 public class DoorController : MonoBehaviour
 {
@@ -9,6 +7,8 @@ public class DoorController : MonoBehaviour
     private AudioSource doorSound;
 
     private float value;
+
+    private bool opened;
 
     private void Start()
     {
@@ -19,24 +19,34 @@ public class DoorController : MonoBehaviour
 
     public void OpenDoor()
     {
-        if (needValue != null && needValue.needValueToOpen)
+        opened = doorAnimator.GetBool("open");
+
+        if (!opened)
         {
-            value = (float)needValue.blockWithValue.GetValueByName(needValue.nameOfValue);
-            if (value >= needValue.minValueToOpen && value <= needValue.maxValueToOpen)
+            if (needValue != null && needValue.needValueToOpen)
+            {
+                value = (float)needValue.blockWithValue.GetValueByName(needValue.nameOfValue);
+                if (value >= needValue.minValueToOpen && value <= needValue.maxValueToOpen)
+                {
+                    doorAnimator.SetBool("open", true);
+                    doorSound.Play();
+                }
+            }
+            else
             {
                 doorAnimator.SetBool("open", true);
                 doorSound.Play();
             }
         }
-        else
-        {
-            doorAnimator.SetBool("open", true);
-            doorSound.Play();
-        }
     }
     public void CloseDoor()
     {
-        doorAnimator.SetBool("open", false);
-        doorSound.Play();
+        opened = doorAnimator.GetBool("open");
+
+        if (opened)
+        {
+            doorAnimator.SetBool("open", false);
+            doorSound.Play();
+        }
     }
 }
