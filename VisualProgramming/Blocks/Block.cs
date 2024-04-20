@@ -22,6 +22,10 @@ public class Block : MonoBehaviour
 
     public BlockType blockType = BlockType.Default;
 
+    //BlockID for save/load
+    public int blockID = -1;
+    public RectTransform blockRectTransform;
+
     [HideInInspector]
     public GameObject blockConnector;
     [HideInInspector]
@@ -31,7 +35,7 @@ public class Block : MonoBehaviour
     [HideInInspector]
     public bool inLoop = false;
     [HideInInspector]
-    public Block nextBlock;
+    public Block nextBlock = null;
     public bool cantBeNext;
     [HideInInspector]
     public GameObject grayedImg;
@@ -43,6 +47,8 @@ public class Block : MonoBehaviour
 
     protected virtual void Awake()
     {
+        blockRectTransform = GetComponent<RectTransform>();
+
         blockType = BlockType.Default;
 
         //Search in childs for connectors points
@@ -55,8 +61,6 @@ public class Block : MonoBehaviour
 
         //Debug blocks
         debugField = transform.parent.parent.Find("DebugLog")?.GetComponentInChildren<TMP_InputField>();
-
-
 
     }
 
@@ -107,7 +111,7 @@ public class Block : MonoBehaviour
         }
         return false;
     }
-    protected void SaveValue(string variable, float valueToSave)
+    public void SaveValue(string variable, object valueToSave)
     {
         foreach (Variable value in variables)
         {
@@ -159,7 +163,7 @@ public class Block : MonoBehaviour
         return null;
     }
 
-    protected void WriteToDebugField(String debugOutput, Color? color = null)
+    public void WriteToDebugField(String debugOutput, Color? color = null)
     {
         
 
@@ -181,6 +185,56 @@ public class Block : MonoBehaviour
                 debugField.textComponent.color = Color.white;
             }
         }
+    }
+
+    //Capture and restore block data
+    public virtual BlockData GetBlockData()
+    {
+        return new BlockData
+        {
+            position = new SerializableVector2(transform.position),
+            inLoop = inLoop,
+            blockID = blockID
+        };
+    }
+
+    public virtual void SetBlockData(BlockData data)
+    {
+        if (data != null)
+        {
+            blockRectTransform.anchoredPosition = data.position.ToVector2();
+            nextBlock = FindBlockByBlockID(data.nextBlockID);
+            inLoop = data.inLoop;
+        }
+        
+    }
+
+    //Find a block by its blockID within the hierarchy
+    protected Block FindBlockByBlockID(int blockID)
+    {
+        //Check if this block matches the desired blockID
+        if (this.blockID == blockID)
+        {
+            Debug.Log("Next Block with ID: " + blockID + " was found");
+            return this;
+        }
+
+        //Traverse through all child blocks (if any)
+        foreach (Transform child in transform)
+        {
+            Block childBlock = child.GetComponent<Block>();
+            if (childBlock != null)
+            {
+                // Recursively search within the child block
+                Block foundBlock = childBlock.FindBlockByBlockID(blockID);
+                if (foundBlock != null)
+                {
+                    Debug.Log("Block with ID: " + blockID + " was found");
+                    return foundBlock;
+                }
+            }
+        }
+        return null;
     }
 }
 

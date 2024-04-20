@@ -1,17 +1,19 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class DoorController : MonoBehaviour
 {
-    private Animator doorAnimator;
+    public Animator doorAnimator;
     private NeedValue needValue;
     private AudioSource doorSound;
 
     private float value;
-
     private bool opened;
+    public string doorName;
 
     private void Start()
     {
+        doorName = this.name;
         doorAnimator = GetComponent<Animator>();
         needValue = GetComponent<NeedValue>();
         doorSound = GetComponent<AudioSource>();
@@ -19,8 +21,6 @@ public class DoorController : MonoBehaviour
 
     public void OpenDoor()
     {
-        opened = doorAnimator.GetBool("open");
-
         if (!opened)
         {
             if (needValue != null && needValue.needValueToOpen)
@@ -30,23 +30,49 @@ public class DoorController : MonoBehaviour
                 {
                     doorAnimator.SetBool("open", true);
                     doorSound.Play();
+                    opened = true;
                 }
             }
             else
             {
                 doorAnimator.SetBool("open", true);
                 doorSound.Play();
+                opened = true;
             }
         }
     }
     public void CloseDoor()
     {
-        opened = doorAnimator.GetBool("open");
-
         if (opened)
         {
             doorAnimator.SetBool("open", false);
             doorSound.Play();
+            opened = false;
         }
+    }
+
+    //Save the current state of the door
+    public DoorData GetDoorData()
+    {
+        DoorData doorData = new DoorData
+        {
+            doorName = doorName,
+            opened = opened
+        };
+
+        return doorData;
+    }
+    public void SetDoorData(DoorData data)
+    {
+
+        if (data.opened)
+        {
+            doorAnimator.SetBool("open", true);
+        }
+        else
+        {
+            doorAnimator.SetBool("open", false);
+        }
+
     }
 }

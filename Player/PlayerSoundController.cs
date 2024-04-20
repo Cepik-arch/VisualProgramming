@@ -1,4 +1,4 @@
-using PlayerController;
+using Player;
 using UnityEngine;
 
 public class PlayerSoundController : MonoBehaviour

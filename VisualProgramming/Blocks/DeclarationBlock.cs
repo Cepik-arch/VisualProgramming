@@ -66,4 +66,19 @@ public class DeclarationBlock : Block
         ShowValues(); // Show the updated list of variables
     }
 
+    //Capture and restore block data
+    public override BlockData GetBlockData()
+    {
+        return new DeclarationBlockData(this);
+    }
+
+    public override void SetBlockData(BlockData data)
+    {
+        base.SetBlockData(data);
+        if (data is DeclarationBlockData declarationBlockData)  // Check if data is MathBlockData
+        {
+            variableName.text = declarationBlockData.variableName;
+            initialValue.text = declarationBlockData.initialValue;
+        }
+    }
 }

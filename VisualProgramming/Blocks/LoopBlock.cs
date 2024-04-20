@@ -16,7 +16,7 @@ public class LoopBlock : Block
         base.Awake();
         blockType = BlockType.LoopBlock;
         inLoop = false;
-        
+
     }
 
     public override void Execute()
@@ -56,6 +56,22 @@ public class LoopBlock : Block
         {
             block.Execute();
         }
+    }
+
+    //Capture and restore block data
+    public override BlockData GetBlockData()
+    {
+        return new LoopBlockData(this);
+    }
+
+    public override void SetBlockData(BlockData data)
+    {
+        base.SetBlockData(data);
+        if (data is LoopBlockData loopBlockData)
+        {
+            loopCount.text = loopBlockData.loopCount.ToString();
+        }
+
     }
 }
 

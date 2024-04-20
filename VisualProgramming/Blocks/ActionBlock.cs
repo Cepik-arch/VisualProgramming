@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
 
 public class ActionBlock : Block
 {
@@ -67,6 +67,21 @@ public class ActionBlock : Block
         else
         {
             Debug.LogWarning($"Action event not found for: {actionName}");
+        }
+    }
+
+    //Capture and restore block data
+    public override BlockData GetBlockData()
+    {
+        return new ActionBlockData(this);
+    }
+
+    public override void SetBlockData(BlockData data)
+    {
+        base.SetBlockData(data);
+        if (data is ActionBlockData actionBlockData)
+        {
+            actionDropdown.value = actionBlockData.selectedActionIndex;
         }
     }
 }

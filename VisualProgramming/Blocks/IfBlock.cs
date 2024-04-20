@@ -8,7 +8,7 @@ public class IfBlock : Block
 
     public TMP_InputField variable1Input;
     public TMP_InputField variable2Input;
-    public TMP_Dropdown operandDropdown;
+    public TMP_Dropdown operatorDropdown;
 
     // Set the block type to IfBlock
     protected override void Awake()
@@ -64,17 +64,17 @@ public class IfBlock : Block
         }
 
         // Get selected operand from dropdown
-        string operand = operandDropdown.options[operandDropdown.value].text;
+        string @operator = operatorDropdown.options[operatorDropdown.value].text;
 
         // Check the condition based on the operand
         bool condition;
         if (value1 is float && value2 is float)
         {
-            condition = CheckCondition((float)value1, (float)value2, operand);
+            condition = CheckCondition((float)value1, (float)value2, @operator);
         }
         else if (value1 is bool && value2 is bool)
         {
-            condition = CheckBoolCondition((bool)value1, (bool)value2, operand);
+            condition = CheckBoolCondition((bool)value1, (bool)value2, @operator);
         }
         else
         {
@@ -114,9 +114,9 @@ public class IfBlock : Block
     }
 
     // Method to check the condition based on the operand
-    private bool CheckCondition(float value1, float value2, string operand)
+    private bool CheckCondition(float value1, float value2, string @operator)
     {
-        switch (operand)
+        switch (@operator)
         {
             case "==":
                 return value1 == value2;
@@ -135,9 +135,9 @@ public class IfBlock : Block
                 return false;
         }
     }
-    private bool CheckBoolCondition(bool value1, bool value2, string operand)
+    private bool CheckBoolCondition(bool value1, bool value2, string @operator)
     {
-        switch (operand)
+        switch (@operator)
         {
             case "==":
                 return value1 == value2;
@@ -146,6 +146,23 @@ public class IfBlock : Block
             default:
                 Debug.LogError("Invalid operand.");
                 return false;
+        }
+    }
+
+    //Capture and restore block data
+    public override BlockData GetBlockData()
+    {
+        return new IfBlockData(this);
+    }
+
+    public override void SetBlockData(BlockData data)
+    {
+        base.SetBlockData(data);
+        if (data is IfBlockData ifBlockData)
+        {
+            variable1Input.text = ifBlockData.variable1Input;
+            variable2Input.text = ifBlockData.variable2Input;
+            operatorDropdown.value = ifBlockData.operatorIndex;
         }
     }
 }

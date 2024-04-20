@@ -20,7 +20,6 @@ public class BatteryManager : MonoBehaviour
     private Coroutine[] transitionCoroutines;
 
     public Block blockValue;
-    private int batteryIndex;
 
     private void Start()
     {
@@ -30,7 +29,7 @@ public class BatteryManager : MonoBehaviour
     public void ChargeBattery()
     {
 
-        if (int.TryParse(blockValue.GetValueByName("X").ToString(), out int batteryIndex))
+        if (int.TryParse(blockValue.GetValueByName("x").ToString(), out int batteryIndex))
         {
             if (batteryIndex < batteries.Count)
             {

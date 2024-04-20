@@ -9,16 +9,18 @@ public class CallUI : MonoBehaviour
     private Canvas ui;
 
     private GameObject player;
-    private PlayerController.PlayerController playerMovement;
+    private Player.PlayerController playerMovement;
     private GameObject playerCamera;
     private GameObject uiCamera;
+    private GameObject uiQuests;
 
     private void Awake()
     {
         ui = gameObject.GetComponentInChildren<Canvas>();
         uiCamera = GameObject.FindGameObjectWithTag("UiCamera");
         player = GameObject.FindGameObjectWithTag("Player");
-        playerCamera = GameObject.FindGameObjectWithTag("MainCamera"); 
+        playerCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        uiQuests = GameObject.FindGameObjectWithTag("QuestUI");
     }
 
     private void Start()
@@ -27,7 +29,7 @@ public class CallUI : MonoBehaviour
 
         uiCamera.SetActive(false);
 
-        playerMovement = player.GetComponent<PlayerController.PlayerController>();
+        playerMovement = player.GetComponent<Player.PlayerController>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -40,6 +42,8 @@ public class CallUI : MonoBehaviour
 
             uiCamera.SetActive(true);
             playerCamera.SetActive(false);
+
+            uiQuests.SetActive(false);
 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -59,6 +63,8 @@ public class CallUI : MonoBehaviour
 
         uiCamera.SetActive(false);
         playerCamera.SetActive(true);
+
+        uiQuests.SetActive(true);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
