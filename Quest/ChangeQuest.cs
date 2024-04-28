@@ -27,6 +27,13 @@ public class ChangeQuest : MonoBehaviour
             {
                 textField.text = questDescription;
             }
+            Destroy(gameObject);
         }
+    }
+
+    public void ChangeQuestText()
+    {
+        titleField.text = questTitle;
+        textField.text = questDescription;
     }
 }

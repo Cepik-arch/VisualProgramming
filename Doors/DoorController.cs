@@ -3,12 +3,14 @@ using UnityEngine.Rendering;
 
 public class DoorController : MonoBehaviour
 {
-    public Animator doorAnimator;
+    private Animator doorAnimator;
     private NeedValue needValue;
     private AudioSource doorSound;
 
     private float value;
     private bool opened;
+
+    [HideInInspector]
     public string doorName;
 
     private void Start()

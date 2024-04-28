@@ -160,7 +160,11 @@ public class BlockConnector : MonoBehaviour
                 {
                     blockConnectionLoop.startBlock = firstBlockClicked;
                     blockConnectionLoop.endBlock = loopBlock.loopedBlock;
-                    loopBlock.loopedBlock.inLoop = true;
+
+                    if (loopBlock != null && loopBlock.loopedBlock != null)
+                    {
+                        loopBlock.loopedBlock.inLoop = true;
+                    }
                     blockConnectionLoop.lineRenderer.startColor = blockConnectionLoop.loopConnectionColor;
                     blockConnectionLoop.lineRenderer.endColor = blockConnectionLoop.loopConnectionColor;
                     blockConnectionLoop.DrawConnection();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -15,13 +16,29 @@ public class LoopBlock : Block
     {
         base.Awake();
         blockType = BlockType.LoopBlock;
-        inLoop = false;
 
     }
 
     public override void Execute()
     {
-        loopNumber = int.Parse(loopCount.text);
+        float value;
+
+        // Check if input is a variable or a value for Variable
+        if (!float.TryParse(loopCount.text, out value))
+        {
+            if (IsVariable(loopCount.text))
+            {
+                value = (float)FindValue(loopCount.text);
+            }
+            else
+            {
+                Debug.Log("Invalid input. Please enter a valid number or variable name.");
+                WriteToDebugField("Invalid input. Please enter a valid number or variable name.", Color.red);
+                return;
+            }
+        }
+
+        loopNumber = (int)Math.Round(value);
 
         iteration++;
 

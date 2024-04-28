@@ -14,6 +14,10 @@ public class BridgePcActions : MonoBehaviour
 
     private float shipSpeed;
 
+    [Header("Next Quest & Room")]
+    public ChangeQuest changeQuest;
+    public DoorController doorController;
+
     public void CheckRoute(Block block) 
     {
         projectorLight.SwapColor(routeSafe);
@@ -45,6 +49,8 @@ public class BridgePcActions : MonoBehaviour
                 return;
             }
             StartCoroutine(ChangeSpeedCoroutine(speed));
+            changeQuest.ChangeQuestText();
+            doorController.OpenDoor();
         }
         else
         {

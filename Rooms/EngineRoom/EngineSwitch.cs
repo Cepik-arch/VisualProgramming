@@ -5,6 +5,10 @@ public class EngineSwitch : MonoBehaviour
     public GameObject engineUiOn;
     public GameObject engineUiOff;
 
+    public DoorController doorToOpen;
+    public ChangeQuest questChanger;
+
+
     private bool engineRunning;
     private BatteryManager batteryManager;
 
@@ -25,6 +29,10 @@ public class EngineSwitch : MonoBehaviour
         {
             engineUiOn.SetActive(true);
             engineUiOff.SetActive(false);
+
+            doorToOpen.OpenDoor();
+            questChanger.ChangeQuestText();
+
         }
         else
         {

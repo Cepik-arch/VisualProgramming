@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class Variable
 {
@@ -40,8 +40,9 @@ public class Block : MonoBehaviour
     [HideInInspector]
     public GameObject grayedImg;
 
-    protected static List<Variable> variables = new List<Variable>();
-    protected float executionDelay = 1f;
+    [HideInInspector]
+    public static List<Variable> variables = new List<Variable>();
+    protected float executionDelay = 0.2f;
 
     protected TMP_InputField debugField;
 
@@ -56,7 +57,7 @@ public class Block : MonoBehaviour
         nextBlockConnector = FindChildWithTag(gameObject, "NextBlockConnector");
 
         //GrayedImg for double click
-        grayedImg = FindChildWithTag(gameObject,"GrayedImg");
+        grayedImg = FindChildWithTag(gameObject, "GrayedImg");
         grayedImg.SetActive(false);
 
         //Debug blocks
@@ -165,13 +166,11 @@ public class Block : MonoBehaviour
 
     public void WriteToDebugField(String debugOutput, Color? color = null)
     {
-        
-
         if (color != null)
         {
             color = Color.white;
         }
-        
+
         if (debugField != null && debugOutput != null)
         {
             debugField.text = debugOutput;
@@ -206,7 +205,7 @@ public class Block : MonoBehaviour
             nextBlock = FindBlockByBlockID(data.nextBlockID);
             inLoop = data.inLoop;
         }
-        
+
     }
 
     //Find a block by its blockID within the hierarchy
